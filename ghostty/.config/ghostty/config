@@ -1,0 +1,8 @@
+# Treat the Mac Option key as a standard terminal Alt key
+macos-option-as-alt = true
+
+# Boot directly into Tmux (using the Apple Silicon Homebrew path)
+command = /opt/homebrew/bin/tmux new-session -A -s main
+font-family = "JetBrainsMono Nerd Font"
+theme = GitHub Light Default
+window-theme = light
