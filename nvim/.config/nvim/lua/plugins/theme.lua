@@ -1,21 +1,17 @@
 return {
   {
-    "projekt0n/github-nvim-theme",
-    name = "github-theme",
+    "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
-    config = function()
-      require("github-theme").setup({
-        options = {
-          transparent = true, -- Inherits Ghostty's background
-        },
-      })
-    end,
+    opts = {
+      style = "day",
+      transparent = true, -- Inherits Ghostty's background
+    },
   },
   {
     "LazyVim/LazyVim",
     opts = {
-      colorscheme = "github_light_default",
+      colorscheme = "tokyonight-day",
     },
   },
 }

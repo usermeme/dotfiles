@@ -4,7 +4,7 @@ macos-option-as-alt = true
 # Boot directly into Tmux (using the Apple Silicon Homebrew path)
 command = /opt/homebrew/bin/tmux new-session -A -s main
 font-family = "Hack Nerd Font"
-theme = GitHub Light Default
+theme = TokyoNight Day
 window-theme = light
 
-selection-background = #b2d7ff
+selection-background = #b6bfe2
