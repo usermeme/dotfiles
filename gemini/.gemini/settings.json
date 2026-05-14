@@ -1,0 +1,76 @@
+{
+  "general": {
+    "sessionRetention": {
+      "enabled": true,
+      "maxAge": "30d",
+      "warningAcknowledged": true
+    },
+    "vimMode": true,
+    "defaultApprovalMode": "plan",
+    "enableNotifications": true,
+    "plan": {
+      "directory": ""
+    }
+  },
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "mcpServers": {},
+  "ui": {
+    "theme": "Default Light",
+    "hideWindowTitle": true,
+    "footer": {
+      "hideContextPercentage": false
+    },
+    "useBackgroundColor": true,
+    "loadingPhrases": "tips"
+  },
+  "output": {
+    "format": "text"
+  },
+  "ide": {
+    "enabled": false
+  },
+  "model": {
+    "name": ""
+  },
+  "agents": {
+    "browser": {
+      "confirmSensitiveActions": true
+    }
+  },
+  "experimental": {
+    "directWebFetch": true,
+    "modelSteering": true,
+    "memoryManager": true,
+    "generalistProfile": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "name": "ensure-daemons",
+            "type": "command",
+            "command": "session-start-ensure-daemons.sh"
+          }
+        ]
+      }
+    ],
+    "AfterTool": [
+      {
+        "matcher": "write_file|replace",
+        "hooks": [
+          {
+            "name": "trigger-daemons",
+            "type": "command",
+            "command": "after-tool-daemon-handler.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
