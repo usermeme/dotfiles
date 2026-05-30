@@ -4,6 +4,7 @@ return {
     version = "*",
     opts_extend = { "sources.default" },
     opts = {
+      keymap = { preset = "super-tab" },
       completion = {
         accept = {
           auto_brackets = {
