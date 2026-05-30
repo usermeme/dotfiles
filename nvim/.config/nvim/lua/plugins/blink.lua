@@ -6,17 +6,10 @@ return {
     opts = {
       keymap = {
         preset = "default",
-        ["<CR>"] = { "accept", "fallback" },
         ["<Tab>"] = {
-          function()
-            if LazyVim.cmp.actions.ai_accept() then
-              return true
-            end
-          end,
-          "snippet_forward",
+          LazyVim.cmp.map({ "ai_accept", "snippet_forward" }),
           "fallback",
         },
-        ["<S-Tab>"] = { "snippet_backward", "fallback" },
       },
       completion = {
         accept = {
