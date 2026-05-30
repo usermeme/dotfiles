@@ -5,11 +5,19 @@ return {
     opts_extend = { "sources.default" },
     opts = {
       keymap = {
-        preset = "default",
         ["<Tab>"] = {
+          function(cmp)
+            if cmp.snippet_active() then
+              return cmp.accept()
+            end
+            if cmp.get_selected_item() and cmp.get_selected_item().source_id == "copilot" then
+              return cmp.accept()
+            end
+          end,
           LazyVim.cmp.map({ "ai_accept", "snippet_forward" }),
           "fallback",
         },
+        ["<S-Tab>"] = { "snippet_backward", "fallback" },
       },
       completion = {
         accept = {
