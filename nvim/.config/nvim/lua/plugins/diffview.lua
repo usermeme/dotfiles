@@ -9,6 +9,9 @@ return {
           layout = "diff3_mixed",
         },
       },
+      file_panel = {
+        listing_style = "list",
+      },
     })
   end,
 }
