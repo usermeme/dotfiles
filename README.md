@@ -29,6 +29,11 @@ My personal configuration files managed with [GNU Stow](https://www.gnu.org/soft
    stow */
    ```
 
+3. Install the Claude Code hooks (colors the tmux window status while Claude runs / when it's done):
+   ```bash
+   ~/.claude/hooks/install-hooks.sh
+   ```
+
 ## Structure
 
 - `claude/`: Claude CLI configuration

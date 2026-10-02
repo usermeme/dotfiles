@@ -1,0 +1,8 @@
+{
+  "UserPromptSubmit": "running",
+  "PostToolUse": "running",
+  "PermissionRequest": "waiting",
+  "Notification": "waiting",
+  "Stop": "done",
+  "SessionEnd": "clear"
+}
