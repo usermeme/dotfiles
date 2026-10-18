@@ -5,7 +5,7 @@ My personal configuration files managed with [GNU Stow](https://www.gnu.org/soft
 ## Prerequisites
 
 - [GNU Stow](https://www.gnu.org/software/stow/)
-- [jq](https://jqlang.github.io/jq/) (only for installing the Claude Code hooks)
+- [jq](https://jqlang.github.io/jq/) (Claude Code hook installation; Cline hooks; optional for the Gemini CLI hook)
 
 ## Installation
 
@@ -18,9 +18,11 @@ My personal configuration files managed with [GNU Stow](https://www.gnu.org/soft
 2. Use GNU Stow to symlink the configurations:
    ```bash
    stow claude
+   stow cline
    stow gemini
    stow ghostty
    stow nvim
+   stow opencode
    stow scripts
    stow tmux
    ```
@@ -51,11 +53,31 @@ The color shows only on non-active windows. The green "done" highlight clears wh
 
 To change which events map to which state, edit `claude/.claude/hooks/tmux-status.hooks.json` and re-run `install-hooks.sh`.
 
+## Agent formatting daemons (eslint_d + prettierd)
+
+`scripts/.local/bin/format-with-daemons.sh` is the shared pipeline: `eslint_d --fix`
+(JS/TS only), then `prettierd` in place (inode, permissions, and executable bit are
+preserved; the original file is kept if a daemon fails). It is wired into every agent:
+
+| Agent | Mechanism | Files |
+|---|---|---|
+| Gemini CLI | `AfterTool` hook (`write_file\|replace`) + `SessionStart` check | `gemini/.gemini/settings.json`, `scripts/.local/bin/after-tool-daemon-handler.sh`, `session-start-ensure-daemons.sh` |
+| OpenCode | native `formatter` config (runs after `write`/`edit`/`patch` tools) | `opencode/.config/opencode/opencode.jsonc` |
+| Cline | `PostToolUse` + `TaskStart` file hooks in `~/.cline/hooks/` | `cline/.cline/hooks/` |
+
+Notes:
+
+- The daemons start themselves on first use; the session/task-start hooks only report availability.
+- `~/.config/opencode/opencode.json` (provider settings incl. API keys) is machine-local and NOT tracked here; OpenCode merges it with the tracked `opencode.jsonc`.
+- In Cline's VS Code extension, hooks must be enabled under Feature Settings → "Enable Hooks" (extension hooks are read from `~/Documents/Cline/Hooks/`; the tracked `~/.cline/hooks/` covers the CLI).
+
 ## Structure
 
 - `claude/`: Claude Code hooks (tmux window status)
+- `cline/`: Cline hooks (eslint/prettier daemons)
 - `gemini/`: Gemini CLI configuration
 - `ghostty/`: Ghostty terminal configuration
 - `nvim/`: Neovim configuration
+- `opencode/`: OpenCode configuration (formatter only; secrets stay machine-local)
 - `scripts/`: Custom shell scripts
 - `tmux/`: Tmux configuration

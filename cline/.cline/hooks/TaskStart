@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Cline TaskStart hook: report daemon availability at task start, mirroring the
+# Gemini CLI SessionStart hook. Fire-and-forget in the CLI (non-blocking).
+# stdout must be hook JSON; the ensure script's "{}" is valid (cancel omitted).
+
+ENSURE="$HOME/.local/bin/session-start-ensure-daemons.sh"
+if [[ -x "$ENSURE" ]]; then
+    exec "$ENSURE"
+fi
+
+printf '{}\n'

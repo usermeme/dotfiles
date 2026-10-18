@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+# Cline PostToolUse hook: run the eslint_d + prettierd daemons on files the
+# agent just wrote, mirroring the Gemini CLI AfterTool hook and the OpenCode
+# formatter.
+#
+# stdin:  hook JSON payload (.postToolUse.{toolName,parameters}, .workspaceRoots)
+# stdout: hook JSON ({"cancel": false} = do not block, no context injected)
+#
+# Blocking hook: keep it fast (30s VS Code / 120s CLI limit). The daemons are
+# warm processes and format-with-daemons.sh never hangs on unrelated work.
+# Bash 3.2 compatible (macOS /bin/bash).
+
+INPUT=$(cat)
+
+finish() { printf '%s\n' "$1"; exit 0; }
+
+# jq is required to parse the (large, nested) payload reliably.
+command -v jq >/dev/null 2>&1 || finish '{"cancel": false}'
+
+TOOL_NAME=$(printf '%s' "$INPUT" | jq -r '.postToolUse.toolName // empty' 2>/dev/null)
+
+CANDIDATES=()
+collect() {
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && CANDIDATES+=("$line")
+    done
+}
+
+case "$TOOL_NAME" in
+    # CLI runtime tools + legacy/VS Code extension tool names.
+    editor|write_to_file|replace_in_file|insert_content|apply_diff|search_and_replace)
+        # The str_replace_editor-style "editor" tool also fires on reads.
+        COMMAND=$(printf '%s' "$INPUT" | jq -r '.postToolUse.parameters.command // empty' 2>/dev/null)
+        [[ "$COMMAND" == "view" ]] && finish '{"cancel": false}'
+        collect < <(printf '%s' "$INPUT" | jq -r '.postToolUse.parameters.path // .postToolUse.parameters.file_path // empty' 2>/dev/null)
+        ;;
+    apply_patch)
+        collect < <(printf '%s' "$INPUT" | jq -r '.postToolUse.parameters.patch // empty' 2>/dev/null \
+            | grep -E '^\*\*\* (Update|Add) File: ' \
+            | sed -E 's/^\*\*\* (Update|Add) File: //')
+        ;;
+    *)
+        finish '{"cancel": false}'
+        ;;
+esac
+
+[[ ${#CANDIDATES[@]} -eq 0 ]] && finish '{"cancel": false}'
+
+WORKSPACE_ROOT=$(printf '%s' "$INPUT" | jq -r '.workspaceRoots[0] // empty' 2>/dev/null)
+
+# Resolve the shared formatter (stowed into ~/.local/bin), fall back to PATH.
+FORMATTER="$HOME/.local/bin/format-with-daemons.sh"
+[[ -x "$FORMATTER" ]] || FORMATTER="format-with-daemons.sh"
+
+for f in "${CANDIDATES[@]}"; do
+    [[ "$f" = /* ]] || f="$WORKSPACE_ROOT/$f"
+    [[ -f "$f" ]] && "$FORMATTER" "$f"
+done
+
+finish '{"cancel": false}'

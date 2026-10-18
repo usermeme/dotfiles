@@ -1,0 +1,30 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Format files after OpenCode's write/edit/patch tools change them, using the
+  // same eslint_d + prettierd daemon chain as the Gemini CLI and Cline hooks
+  // (shared core: ~/.local/bin/format-with-daemons.sh, stowed from dotfiles/scripts).
+  //
+  // Note: ~/.config/opencode/opencode.json (provider settings incl. API keys) is
+  // deliberately machine-local and NOT tracked in dotfiles; OpenCode loads and
+  // merges both files.
+  "formatter": {
+    // OpenCode stops after the first formatter that exits successfully, so the
+    // JS-family builtins are disabled to keep the daemon chain authoritative.
+    // Other builtins (gofmt, ruff, shfmt, ...) stay available for their own
+    // file types when their tools are installed.
+    "prettier": { "disabled": true },
+    "oxfmt": { "disabled": true },
+    "biome": { "disabled": true },
+
+    "daemons": {
+      "command": ["{env:HOME}/.local/bin/format-with-daemons.sh", "$FILE"],
+      "extensions": [
+        ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs",
+        ".json", ".jsonc", ".md", ".markdown",
+        ".css", ".scss", ".less", ".html", ".htm",
+        ".yml", ".yaml", ".vue", ".svelte", ".graphql", ".gql", ".xml"
+      ]
+    }
+  }
+}
