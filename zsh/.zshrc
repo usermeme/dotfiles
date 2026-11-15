@@ -69,6 +69,7 @@ fi
 
 # pnpm
 export PNPM_HOME="$HOME/Library/pnpm"
+[[ -d $PNPM_HOME ]] || mkdir -p "$PNPM_HOME"
 path_prepend "$PNPM_HOME" "$PNPM_HOME/bin"
 
 # yarn
