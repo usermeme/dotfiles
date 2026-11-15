@@ -21,7 +21,15 @@ path_prepend "$HOMEBREW_PREFIX/opt/curl/bin" "$HOME/.local/bin"
 # =============================================================================
 # ZSH Completion & Prompt
 # =============================================================================
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+# Homebrew owned by another account (e.g. non-admin user on a shared Mac):
+# compaudit flags its site-functions as insecure and prompts on every shell.
+# Trust it with -u; keep the normal security check everywhere else.
+if [[ -d $HOMEBREW_PREFIX && ! -O $HOMEBREW_PREFIX ]]; then
+  compinit -u
+else
+  compinit
+fi
 
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
