@@ -25,7 +25,10 @@ My personal configuration files managed with [GNU Stow](https://www.gnu.org/soft
    stow opencode
    stow scripts
    stow tmux
+   stow zsh
    ```
+
+   If `~/.zshrc` already exists as a regular file, move it aside first (`mv ~/.zshrc ~/.zshrc.bak`), otherwise stow will refuse to link it. Put machine-specific settings and secrets in `~/.zshrc.local` (untracked, sourced at the end of `.zshrc`).
 
    Or stow everything at once:
    ```bash
@@ -81,3 +84,4 @@ Notes:
 - `opencode/`: OpenCode configuration (formatter only; secrets stay machine-local)
 - `scripts/`: Custom shell scripts
 - `tmux/`: Tmux configuration
+- `zsh/`: Zsh configuration (prompt, PATH, language toolchains; local overrides in `~/.zshrc.local`)
